@@ -2,6 +2,9 @@
 // Load passport local
 var localStrategy = require('passport-local').Strategy;
 
+// Load validator
+var validator = require('validator');
+
 // Load user model
 var User = require('../model/user');
 
@@ -26,6 +29,17 @@ module.exports = function( passport ) {
       passReqToCallback: true
     },
     function( req, email, password, done){
+
+        // Check that the email is in the right format
+        if( !validator.isEmail(email) ){
+          return done(null, false, req.flash('loginMessage','That is not an email address'));
+        }
+
+        // Check that the password is at least 8 chars
+        if( password.length < 8 ){
+          return done(null, false, req.flash('loginMessage','The password needs to be 8 chars long'));
+        }
+
         process.nextTick(function(){
           User.findOne( {'local.email' : email }, function(err, user){
             if(err){
