@@ -32,7 +32,7 @@ module.exports = function( passport ) {
 
         // Check that the email is in the right format
         if( !validator.isEmail(email) ){
-          return done(null, false, req.flash('loginMessage','That is not an email address'));
+          return done(null, false, req.flash('loginMessage','That is not a valid email address'));
         }
 
         // Check that the password is at least 8 chars
