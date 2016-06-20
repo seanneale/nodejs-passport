@@ -32,7 +32,7 @@ module.exports = function( passport ) {
               return done(err);
             }
             if(user){
-              return done(null, false, req.flash('SignupMessage','That email is already in use'));
+              return done(null, false, req.flash('loginMessage','That email is already in use'));
             }else{
               var newUser = new User();
               newUser.local.email = email;
@@ -41,7 +41,7 @@ module.exports = function( passport ) {
                 if(err){
                   console.log(err);
                 }
-                return done(null, newUser);
+                return done(null, newUser, req.flash('loginMessage', 'Logged in successfully'));
               });
             }
           });
@@ -62,14 +62,14 @@ module.exports = function( passport ) {
             }
 
             if(!user){
-              return done(null,false, req.flash('loginMassage', 'sorry no one by that email'));
+              return done(null,false, req.flash('loginMessage', 'sorry no one by that email'));
             }
 
             if(!user.validPassword(password)){
-              return done(null,false, req.flash('loginMassage', 'sorry wrong password'));
+              return done(null,false, req.flash('loginMessage', 'sorry wrong password'));
              }
 
-            return done(null, user);
+            return done(null, user, req.flash('loginMessage', 'Logged in successfully'));
           });
         });
     }));

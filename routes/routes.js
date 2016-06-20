@@ -13,7 +13,7 @@ module.exports = function(app, passport){
 
   // Sign up
   app.get('/', function(req, res){
-    res.render('signup');
+    res.render('signup', { message: req.flash('loginMessage') });
   });
 
   // Sign up
@@ -25,7 +25,7 @@ module.exports = function(app, passport){
 
   // Login
   app.get('/login', function(req, res){
-    res.render('login');
+    res.render('login', { message: req.flash('loginMessage') });
   });
 
   // Login
@@ -37,7 +37,7 @@ module.exports = function(app, passport){
 
     // Secret
   app.get('/secret', isLoggedIn, function(req, res){
-    res.render('secret');
+    res.render('secret', { message: req.flash('loginMessage') });
   });
 
   // logout
