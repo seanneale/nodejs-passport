@@ -18,7 +18,7 @@ module.exports = function(app, passport){
 
   // Sign up
   app.post('/', passport.authenticate('local-signup', {
-    successRedirect : '/secret',
+    successRedirect : '/profile',
     failureRedirect : '/',
     failureFlash: true
   }));
@@ -30,19 +30,41 @@ module.exports = function(app, passport){
 
   // Login
   app.post('/login', passport.authenticate('local-login', {
-    successRedirect : '/secret',
+    successRedirect : '/profile',
     failureRedirect : '/login',
     failureFlash: true
   }));
 
-    // Secret
-  app.get('/secret', isLoggedIn, function(req, res){
-    res.render('secret', { message: req.flash('loginMessage') });
+    // Profile
+  app.get('/profile', isLoggedIn, function(req, res){
+    res.render('profile', { message: req.flash('loginMessage'), user: req.user});
+  });
+
+
+  app.post('/change', isLoggedIn, function(req, res){
+
+    // Change name
+    if(req.body.name){
+      req.user.name = req.body.name;
+      req.user.save();
+      req.flash('loginMessage','Name changed to ' + req.body.name );
+      res.redirect('/profile');
+    }
+
+    // Change password
+    if(req.body.current){
+      if(req.user.validPassword( req.body.current )){
+        req.user.local.password = req.user.generateHash(req.body.new);
+        req.user.save();
+        req.flash('loginMessage','Successfully change password');
+        res.redirect('/profile');
+      }
+    }
   });
 
   // logout
   app.get('/logout', function(req, res){
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
   });
 }

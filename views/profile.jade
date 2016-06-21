@@ -1,0 +1,61 @@
+doctype html
+html
+  head
+    title Passport Secret
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css')
+  body
+    .container
+      .row
+        .pull-right
+          a(href='/logout') Logout
+      .row
+        .col-sm-8.col-sm-offset-2
+          h1
+            span.fa.fa-sign-in Secret
+      .row
+        .col-sm-8.col-sm-offset-2
+          if (message.length > 0)
+           .alert.alert-success #{message}
+          // LOGIN FORM
+          h2 Add/Change name
+          form(action='/change', method='post')
+            .form-group
+              label Name
+              input.form-control(type='text', name='name')
+            button.btn.btn-warning.btn-lg(type='submit') Save
+
+          h2 Change password
+          form(action='/change', method='post')
+            .form-group
+              label Current
+              input.form-control(type='password', name='current')
+            .form-group.password-change.new
+              label New
+              input.form-control(type='password', name='new')
+            .form-group.password-change.confirm
+              label Confirm
+              input.form-control(type='password', name='confirm')
+            button.btn.btn-warning.btn-lg(type='submit') Change
+
+
+    // jQuery from Google CDN
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+    // Latest compiled and minified JavaScript
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js', integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS', crossorigin='anonymous')
+
+    script.
+      $(function() {
+        console.log('ready');
+
+        $( ".password-change" ).on('keyup', function(){
+          if( $( "input[name='new']" ).val() == $( "input[name='confirm']" ).val()){
+          $( ".password-change.confirm" ).removeClass('has-error');
+            $( ".password-change" ).addClass('has-success');
+          }else{
+            $( ".password-change.confirm" ).addClass('has-error');
+          }
+        });
+
+      });
+
