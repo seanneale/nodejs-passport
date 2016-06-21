@@ -2,11 +2,19 @@
 // Load passport local
 var localStrategy = require('passport-local').Strategy;
 
+// Load Facebook
+var FacebookStrategy = require('passport-facebook').Strategy;
+
 // Load validator
 var validator = require('validator');
 
 // Load user model
 var User = require('../model/user');
+
+// Load settings
+var config = require('../config.json');
+
+console.log( config.facebook.appId );
 
 module.exports = function( passport ) {
 
@@ -87,4 +95,56 @@ module.exports = function( passport ) {
           });
         });
     }));
+
+    passport.use(new FacebookStrategy({
+        clientID        : config.facebook.appId,
+        clientSecret    : config.facebook.appSecret,
+        callbackURL     : config.facebook.callback,
+        profileFields   : ['id', 'emails', 'name']
+    },
+    // facebook will send back the token and profile
+    function(token, refreshToken, profile, done) {
+
+        // asynchronous
+        process.nextTick(function() {
+
+            // find the user in the database based on their Facebook id
+            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+
+                // if there is an error, stop everything and return the error
+                if (err)
+                    return done(err);
+
+                // if the user is found, then log them in
+                if (user) {
+                    return done(null, user); // user found, return that user
+                } else {
+                    // if there is no user found with that facebook id, create them
+                    var newUser            = new User();
+
+                    console.log(profile);
+
+                    // set all of the facebook information in our user model
+                    newUser.facebook.id    = profile.id; // set the users facebook id
+                    newUser.facebook.token = token; // we will save the token that facebook provides to the user
+                    newUser.facebook.name  = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                    newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
+
+                    newUser.name = newUser.facebook.name;
+
+                    // save our user to the database
+                    newUser.save(function(err) {
+                        if (err)
+                            throw err;
+
+                        // if successful, return the new user
+                        return done(null, newUser);
+                    });
+                }
+
+            });
+        });
+
+    }));
+
 }

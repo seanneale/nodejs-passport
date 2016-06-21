@@ -74,3 +74,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Don't commit the config.json file
+config.json

@@ -22,7 +22,7 @@ html
           form(action='/change', method='post')
             .form-group
               label Name
-              input.form-control(type='text', name='name')
+              input.form-control(type='text', name='name', value='#{user.name}')
             button.btn.btn-warning.btn-lg(type='submit') Save
 
           h2 Change password
@@ -56,6 +56,5 @@ html
             $( ".password-change.confirm" ).addClass('has-error');
           }
         });
-
       });
 
