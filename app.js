@@ -22,6 +22,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set( 'views', path.join(__dirname, 'views'));
 app.set( 'view engine', 'jade');
 
+// Add static files
+app.use(express.static(__dirname + '/public'));
+
 // Setup sessions
 app.use(session( { secret: 'ilovevdi'}));
 app.use(passport.initialize());
