@@ -2,6 +2,12 @@
 // Load passport local
 var localStrategy = require('passport-local').Strategy;
 
+//load passport facebook
+var facebookStrategy = require('passport-facebook').Strategy;
+
+//load passport twitter
+var twitterStrategy = require('passport-twitter').Strategy;
+
 // Load validator
 var validator = require('validator');
 
@@ -87,4 +93,68 @@ module.exports = function( passport ) {
           });
         });
     }));
+
+  passport.use(new facebookStrategy({
+    clientID: "1204259582980057",
+    clientSecret: "7bd1f52f1b24cf5e854d1a021176d12e",
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    passReqToCallback: true
+  }, function(req,accessToken, refreshToken, profile, done){
+    process.nextTick(function(){
+      User.findOne( {'facebook.id' : profile.id }, function(err, user){
+        if(err){
+          return done(err);
+        }
+        if(user){
+          return done(null, user, req.flash('loginMessage', 'Logged in successfully'));
+        }else{
+          var newUser = new User();
+          newUser.facebook.id = profile.id;
+          newUser.facebook.token = accessToken;
+          newUser.facebook.name = profile.displayName;
+          newUser.save(function(err){
+            if(err){
+              console.log(err);
+            }
+            return done(null, newUser, req.flash('loginMessage', 'Logged in successfully'));
+          });
+        }
+      });
+    });
+  }));
+
+  passport.use(new twitterStrategy({
+    consumerKey: "sDHjSbJ3AI9poMZlCEPIneDMX",
+    consumerSecret: "Jj6AVf6RUnTzv4iB24wMOkIpi0acLKVYFQ7uP9Kca3qg4KPija",
+    callbackURL: "http://127.0.0.1:3000/auth/twitter/callback",
+    passReqToCallback: true
+  }, function(req,token, tokenSecret, profile, done){
+    process.nextTick(function(){
+      User.findOne( {'twitter.id' : profile.id }, function(err, user){
+        if(err){
+          return done(err);
+        }
+        if(user){
+
+//          return done(null, user, req.flash('loginMessage', 'Logged in successfully'));
+          return done(null, user, req.flash('loginMessage', 'Logged in successfully'));
+        }else{
+          var newUser = new User();
+          newUser.twitter.id = profile.id;
+          newUser.twitter.token = token;
+          newUser.twitter.secret = tokenSecret;
+          newUser.twitter.displayName = profile.displayName;
+          newUser.twitter.img = profile.photos[0].value;
+          newUser.twitter.username = profile.username;
+          newUser.save(function(err){
+            if(err){
+              console.log(err);
+            }
+            //return done(null, newUser, req.flash('loginMessage', 'Logged in successfully'));
+            return done(null, newUser, req.flash('loginMessage', 'Logged in successfully'));
+          });
+        }
+      });
+    });
+  }));
 }

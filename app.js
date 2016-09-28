@@ -28,14 +28,20 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
+//suport static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Setup local-strategy
 require('./config/passport')(passport);
 
 // Routes
 require('./routes/routes')(app, passport);
 
+//twitter controller routes
+require('./controller/twitter')(app, passport);
+
 // listen
 app.listen( 3000, function(){
-    console.log('lisning on port 3000');
+    console.log('listening on port 3000');
 });
 
